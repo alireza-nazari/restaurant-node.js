@@ -1,0 +1,6 @@
+{
+  "required": "can't be blank",
+  "email": "is not a valid email",
+  "confirmPassword": "The passwords does not match",
+  "invalid": "is invalid"
+}
