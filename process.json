@@ -1,0 +1,9 @@
+{
+  "apps" : [{
+    "name"        : "node_restaurant",
+    "script"      : "./app.js",
+    "watch"       : "./",
+    "instances"   : "max",
+    "exec_mode"   : "cluster"
+  }]
+}

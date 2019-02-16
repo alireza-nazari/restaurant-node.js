@@ -1,10 +1,19 @@
 const BaseDAO = require('../../core/base-dao');
-const ResturantSchema = require('./model');
+const RestaurantSchema = require('./model');
 
-class ResturantsDAO extends BaseDAO {
+class RestaurantsDAO extends BaseDAO {
   constructor() {
-    super('Restaurants', ResturantSchema);
+    super('Restaurants', RestaurantSchema);
+  }
+
+  getRestaurant(query) {
+    return this.model.findOne(query)
+      .populate('products')
+      .select({
+        __v: 0,
+      })
+      .exec();
   }
 }
 
-module.exports = new ResturantsDAO();
+module.exports = new RestaurantsDAO();

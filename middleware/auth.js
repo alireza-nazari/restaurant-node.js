@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const { UserDAO } = require('../components/users');
+const UserDAO = require('../components/users/private/dao');
 const { secret, tokens } = require('../config')('jwt');
 
 class Authorization {

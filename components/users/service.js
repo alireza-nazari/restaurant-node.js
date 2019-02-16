@@ -1,39 +1,11 @@
 const validate = require('validate.js');
 
-const options = require('./private/userOptions');
+const options = require('./private/validateOptions');
 const UserDAO = require('./private/dao');
-const { updateToken, TokenDAO } = require('../token');
-
-
-exports.getUsers = (req, res) => {
-  UserDAO.fetchMany()
-    .select({
-      __v: 0, hash: 0, iteration: 0, salt: 0,
-    })
-    .then((users) => {
-      res.json(users);
-    })
-    .catch((err) => {
-      res.json(err);
-    });
-};
-
-exports.getOneUser = (req, res) => {
-  if (req.user) {
-    return res.json(req.user);
-  }
-  return UserDAO.fetchOne({ _id: req.params.id })
-    .then((user) => {
-      res.json(user);
-    })
-    .catch(err => res.json(err));
-};
+const { updateToken } = require('../token/authToken');
+const TokenDAO = require('../token/private/dao');
 
 exports.createUsers = (req, res) => {
-  if (!req.body) {
-    return res.status(400).json({ message: 'Body required' });
-  }
-  console.log(req.file);
   const errors = validate(req.body, options);
   if (errors) {
     return res.status(401).json(errors);
@@ -48,6 +20,9 @@ exports.createUsers = (req, res) => {
         country: req.body.country,
         city: req.body.city,
       };
+      if (req.file) {
+        req.body.image = req.file.filename;
+      }
       return UserDAO.insert(req.body)
         .then(fullUser => ({
           _id: fullUser._id,
@@ -64,6 +39,37 @@ exports.createUsers = (req, res) => {
         .catch(err => res.json(err));
     })
     .catch(err => res.status(444).json(err));
+};
+
+exports.getUsers = (req, res) => {
+  const { limit, offset } = req;
+  UserDAO.fetchMany({}, { limit, offset })
+    .then(users => users.map((user) => {
+      user.image = `images/users/${user.image}`;
+      return user;
+    }))
+    .then((users) => {
+      res.json(users);
+    })
+    .catch((err) => {
+      res.json(err);
+    });
+};
+
+exports.getOneUser = (req, res) => {
+  if (req.user) {
+    req.user.image = `images/users/${req.user.image}`;
+    return res.json(req.user);
+  }
+  return UserDAO.getOne({ _id: req.params.id })
+    .then((user) => {
+      if (!user) {
+        return res.status(400).json({ message: 'no such user' });
+      }
+      user.image = `images/users/${user.image}`;
+      return res.json(user);
+    })
+    .catch(err => res.json(err));
 };
 
 exports.login = (req, res) => {

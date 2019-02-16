@@ -7,10 +7,9 @@ class BaseDAO {
 
   fetchMany(query = {}, options = {}) {
     return this.model.find(query)
-      .limit(options.limit)
       .skip(options.offset)
-      .sort(options.sort || {})
-      .exec();
+      .limit(options.limit)
+      .sort(options.sort || {});
   }
 
   fetchOne(query = {}) {

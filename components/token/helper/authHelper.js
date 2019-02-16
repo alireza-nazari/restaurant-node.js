@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const uuid = require('uuid/v4');
 
-const { TokenDAO } = require('../private/dao');
+const TokenDAO = require('../private/dao');
 const { secret, tokens } = require('../../../config')('jwt');
 
 module.exports.generateAccessToken = (userId) => {

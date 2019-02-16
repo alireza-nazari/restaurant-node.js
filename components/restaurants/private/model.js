@@ -1,16 +1,18 @@
-const { Schema } = require('mongoose');
+const mongoose = require('mongoose');
+
+const { Schema } = mongoose;
 
 const RestaurantsSchema = new Schema({
   name: {
     type: String,
     required: true,
     lowercase: true,
-    index: true,
     trim: true,
   },
   type: {
     type: String,
     required: true,
+    enum: ['restaurant', 'cafe'],
   },
   description: {
     type: String,
@@ -20,6 +22,12 @@ const RestaurantsSchema = new Schema({
     type: String,
     default: 'rest_image.jpg',
   },
+  products: [
+    {
+      type: mongoose.ObjectId,
+      ref: 'Products',
+    },
+  ],
   address: {
     city: {
       type: String,
