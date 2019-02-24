@@ -25,7 +25,7 @@ class BaseDAO {
   }
 
   remove(query) {
-    return this.model.remove(query);
+    return this.model.deleteOne(query);
   }
 }
 

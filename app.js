@@ -9,6 +9,8 @@ const tokenRouter = require('./components/token/api');
 const restaurantsRouter = require('./components/restaurants/api');
 const ordersRouter = require('./components/orders/api');
 const productsRouter = require('./components/products/api');
+const tablesRouter = require('./components/tables/api');
+const reservationsRouter = require('./components/reservation/api');
 
 const app = express();
 
@@ -24,6 +26,8 @@ app.use('/refresh', tokenRouter);
 app.use('/restaurants', restaurantsRouter);
 app.use('/orders', ordersRouter);
 app.use('/products', productsRouter);
+app.use('/tables', tablesRouter);
+app.use('/reservations', reservationsRouter);
 
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {

@@ -23,9 +23,7 @@ restaurantsRouter.get('/:id', Auth.authorizeRequest('user'), restaurants.getRest
 // restaurantsRouter.put('/:id', Auth.authorizeRequest('admin'), restaurants.updateById);
 
 restaurantsRouter.delete('/:id', Auth.authorizeRequest('admin'), restaurants.deleteRestaurnt);
-
 restaurantsRouter.post('/:id/products', Auth.authorizeRequest('admin'), restaurants.addProducts);
 restaurantsRouter.delete('/:id/products/:prod_id', Auth.authorizeRequest('admin'), restaurants.deleteProduct);
-
 
 module.exports = restaurantsRouter;

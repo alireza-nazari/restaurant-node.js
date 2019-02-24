@@ -11,6 +11,7 @@ const OrdersSchema = new Schema({
     productId: {
       type: mongoose.ObjectId,
       ref: 'Products',
+      required: true,
     },
     quantity: {
       type: Number,
@@ -25,7 +26,6 @@ const OrdersSchema = new Schema({
     },
     transactionId: {
       type: String,
-      required: true,
     },
   },
   created: {

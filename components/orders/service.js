@@ -46,12 +46,11 @@ exports.createOrder = (req, res) => {
     return res.status(422).json({ errors });
   }
   const {
-    method, transactionId, address,
+    method, address,
   } = req.body;
-  req.body.payment = { method, transactionId };
+  req.body.payment = { method };
   req.body.shipping = { address };
-  console.log(req.body);
-  return OrderDAO.createOrder(req.body)
+  return OrderDAO.insert(req.body)
     .then(order => res.json(order))
     .catch(err => res.json(err));
 };

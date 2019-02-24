@@ -6,9 +6,7 @@ exports.OrderConstrains = {
     presence: true,
     inclusion: ['visa', 'cash'],
   },
-  transactionId: {
-    presence: true,
-  },
+  transactionId: {},
   address: {
     presence: true,
   },

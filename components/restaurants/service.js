@@ -4,9 +4,12 @@ const RestaurantsDAO = require('./private/dao');
 const options = require('./private/validateOptions');
 
 exports.createRestaurants = (req, res) => {
+  if (JSON.stringify(req.body) === '{}') {
+    return res.status(400).json({ message: 'Body required' });
+  }
   const errors = validate(req.body, options);
   if (errors) {
-    return res.status(401).json(errors);
+    return res.status(422).json(errors);
   }
   req.body.address = {
     country: req.body.country,
@@ -59,9 +62,12 @@ exports.deleteRestaurnt = (req, res) => {
 };
 
 exports.addProducts = (req, res) => {
+  if (JSON.stringify(req.body) === '{}') {
+    return res.status(400).json({ message: 'Body required' });
+  }
   const errors = validate(req.body, { productId: { presence: true } });
   if (errors) {
-    return res.status(401).json(errors);
+    return res.status(422).json(errors);
   }
   const { productId } = req.body;
   const update = {};
@@ -81,7 +87,7 @@ exports.addProducts = (req, res) => {
     .catch(err => res.json(err));
 };
 
-exports.deleteProduct = (req, res) => {
+exports.deleteProduct = async (req, res) => {
   const query = { _id: req.params.id };
   const update = {
     $pull: { products: req.params.prod_id },

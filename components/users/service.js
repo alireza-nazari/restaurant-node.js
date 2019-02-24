@@ -6,9 +6,12 @@ const { updateToken } = require('../token/authToken');
 const TokenDAO = require('../token/private/dao');
 
 exports.createUsers = (req, res) => {
+  if (JSON.stringify(req.body) === '{}') {
+    return res.status(400).json({ message: 'Body required' });
+  }
   const errors = validate(req.body, options);
   if (errors) {
-    return res.status(401).json(errors);
+    return res.status(422).json(errors);
   }
   const { email } = req.body;
   return UserDAO.fetchOne({ email })
@@ -73,7 +76,7 @@ exports.getOneUser = (req, res) => {
 };
 
 exports.login = (req, res) => {
-  if (!req.body) {
+  if (JSON.stringify(req.body) === '{}') {
     return res.status(400).json({ message: 'Body required' });
   }
   const { email, password } = req.body;
@@ -106,7 +109,7 @@ exports.login = (req, res) => {
 };
 
 exports.updateUsers = (req, res) => {
-  if (!req.body) {
+  if (JSON.stringify(req.body) === '{}') {
     return res.status(400).json({ message: 'Body required' });
   }
   if ('role' in req.body && req.user.role !== 'admin') {

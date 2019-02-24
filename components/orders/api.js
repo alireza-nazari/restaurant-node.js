@@ -7,6 +7,7 @@ const { equalById } = require('./middleware/order');
 const orderRouter = express.Router();
 
 orderRouter.get('/all', Auth.authorizeRequest('admin'), orders.getOrders);
+orderRouter.use(Auth.authorizeRequest());
 orderRouter.post('/', orders.createOrder);
 orderRouter.post('/:id/products/', orders.addProduct);
 orderRouter.get('/', orders.getOrdersByUserId);
