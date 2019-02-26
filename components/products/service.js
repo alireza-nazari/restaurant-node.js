@@ -27,7 +27,7 @@ exports.createProduct = (req, res) => {
   }
   const errors = validate(req.body, options);
   if (errors) {
-    return res.status(422).json(errors);
+    return res.status(422).json({ errors });
   }
   if (req.file) {
     req.body.image = req.file.filename;
@@ -58,7 +58,7 @@ exports.updateProduct = (req, res) => {
     }
     errors = validate(req.body, option);
     if (errors) {
-      return res.status(422).json(errors);
+      return res.status(422).json({ errors });
     }
   }
   let categories;

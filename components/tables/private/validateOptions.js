@@ -1,10 +1,16 @@
+const moment = require('moment');
 const validate = require('validate.js');
 const { ObjectId } = require('mongoose').Types;
 
 const msg = require('../../../messages');
 
 validate.validators.ObjectId = value => (ObjectId.isValid(value) ? null : 'is not a ObjectId');
-validate.validators.char = value => (value.toString().length === 2 ? null : 'must be 2 characters');
+validate.validators.datetime = (value) => {
+  const d = moment(value, 'YYYY-MM-DD HH:mm', true).isValid()
+    ? null
+    : 'format should be \'YYYY-MM-DD HH:mm\'';
+  return d;
+};
 
 const tableConstrains = {
   number: {
@@ -26,37 +32,11 @@ const tableConstrains = {
 const timeConstrains = {
   startTime: {
     presence: { message: msg('required') },
-  },
-  'startTime.hour': {
-    presence: { message: msg('required') },
-    numericality: {
-      onlyInteger: true,
-    },
-    char: true,
-  },
-  'startTime.minute': {
-    presence: { message: msg('required') },
-    numericality: {
-      onlyInteger: true,
-    },
-    char: true,
+    datetime: true,
   },
   endTime: {
     presence: { message: msg('required') },
-  },
-  'endTime.hour': {
-    presence: { message: msg('required') },
-    numericality: {
-      onlyInteger: true,
-    },
-    char: true,
-  },
-  'endTime.minute': {
-    presence: { message: msg('required') },
-    numericality: {
-      onlyInteger: true,
-    },
-    char: true,
+    datetime: true,
   },
   restaurantId: {
     presence: { message: msg('required') },

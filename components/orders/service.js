@@ -130,7 +130,7 @@ exports.updateOrder = (req, res) => {
   }
   errors = validate(req.body, option);
   if (errors) {
-    return res.status(422).json(errors);
+    return res.status(422).json({ errors });
   }
   if (req.body.method) {
     req.body.payment = { method: req.body.method };

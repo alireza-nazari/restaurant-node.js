@@ -8,7 +8,7 @@ exports.booking = data => new Promise(async (resolve, reject) => {
   if (errors) {
     const error = {
       status: 422,
-      message: errors,
+      errors,
     };
     return reject(error);
   }

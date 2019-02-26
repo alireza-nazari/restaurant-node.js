@@ -8,15 +8,20 @@ const namePattern = /^[A-Za-z\-' ']+$/;
 const phonePattern = /((\(\d{3}\) ?)|(\d{2}-))?\d{3}-\d{2}-\d{2}-\d{2}$/;
 
 validate.validators.ObjectId = value => (ObjectId.isValid(value) ? null : 'is not a ObjectId');
-validate.extend(validate.validators.datetime, {
-  parse(value) {
-    return +moment.utc(value);
-  },
-  format(value, options) {
-    const format = options.dateOnly ? 'YYYY-MM-DD' : 'YYYY-MM-DD hh:mm:ss';
-    return moment.utc(value).format(format);
-  },
-});
+// validate.extend(validate.validators.datetime, {
+//   parse(value) {
+//     return +moment(value);
+//   },
+//   format(value) {
+//     return moment(value, 'YYYY-MM-DD HH:mm', true).format('YYYY-MM-DD HH:mm');
+//   },
+// });
+validate.validators.datetime = (value) => {
+  const d = moment(value, 'YYYY-MM-DD HH:mm', true).isValid()
+    ? null
+    : 'format should be \'YYYY-MM-DD HH:mm\'';
+  return d;
+};
 
 const bookingConstrains = {
   tableId: {
@@ -51,41 +56,16 @@ const bookingConstrains = {
       onlyInteger: true,
     },
   },
-  date: {
-    presence: { message: msg('required') },
-    datetime: {
-      dateOnly: true,
-      earliest: true,
-    },
-  },
   startTime: {
     presence: { message: msg('required') },
-  },
-  'startTime.hour': {
-    presence: { message: msg('required') },
-    numericality: {
-      onlyInteger: true,
-    },
-  },
-  'startTime.minute': {
-    presence: { message: msg('required') },
-    numericality: {
-      onlyInteger: true,
+    datetime: {
+      earliest: true,
     },
   },
   endTime: {
     presence: { message: msg('required') },
-  },
-  'endTime.hour': {
-    presence: { message: msg('required') },
-    numericality: {
-      onlyInteger: true,
-    },
-  },
-  'endTime.minute': {
-    presence: { message: msg('required') },
-    numericality: {
-      onlyInteger: true,
+    datetime: {
+      earliest: true,
     },
   },
 };

@@ -83,7 +83,7 @@ exports.login = (req, res) => {
   const { email: option } = options;
   const errors = validate({ email }, { email: option });
   if (errors) {
-    return res.status(422).json(errors);
+    return res.status(422).json({ errors });
   }
   return UserDAO.fetchOne({ email })
     .then((user) => {
@@ -125,11 +125,11 @@ exports.updateUsers = (req, res) => {
     }
   });
   if (JSON.stringify(errors) !== '{}') {
-    return res.status(400).json(errors);
+    return res.status(400).json({ errors });
   }
   errors = validate(req.body, option);
   if (errors) {
-    return res.status(422).json(errors);
+    return res.status(422).json({ errors });
   }
   if ('password' in req.body) {
     req.user.password = req.body.password;

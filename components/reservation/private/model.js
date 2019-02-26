@@ -18,7 +18,6 @@ const ReservationSchema = new Schema({
   email: {
     type: String,
     email: true,
-    unique: true,
     required: true,
   },
   phone: {
@@ -27,7 +26,7 @@ const ReservationSchema = new Schema({
   },
   occasions: {
     type: String,
-    enum: ['birthday', 'anniversary', 'date-night', 'business-meal', 'celebration'],
+    enum: ['birthday', 'anniversary', 'date-night', 'business-meal', 'celebration', null],
   },
   message: {
     type: String,
@@ -36,29 +35,13 @@ const ReservationSchema = new Schema({
     type: Number,
     default: 1,
   },
-  date: {
+  startTime: {
     type: String,
     required: true,
   },
-  startTime: {
-    hour: {
-      type: Number,
-      required: true,
-    },
-    minute: {
-      type: Number,
-      required: true,
-    },
-  },
   endTime: {
-    hour: {
-      type: Number,
-      required: true,
-    },
-    minute: {
-      type: Number,
-      required: true,
-    },
+    type: String,
+    required: true,
   },
 });
 

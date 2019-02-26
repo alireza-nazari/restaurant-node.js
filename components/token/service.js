@@ -7,7 +7,9 @@ const { secret, tokens } = require('../../config')('jwt');
 exports.refreshTokens = (req, res) => {
   if (!req.body.refreshToken) {
     return res.status(400).json({
-      refreshToken: ['refreshToken can\'t be blank'],
+      errors: {
+        refreshToken: ['refreshToken can\'t be blank'],
+      },
     });
   }
   const { refreshToken } = req.body;

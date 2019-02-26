@@ -1,4 +1,5 @@
 const validate = require('validate.js');
+const moment = require('moment');
 
 const TablesDAO = require('./private/dao');
 const reservation = require('../reservation/service');
@@ -13,7 +14,7 @@ exports.createTable = async (req, res, next) => {
   }
   const errors = validate(req.body, tableConstrains);
   if (errors) {
-    return res.status(422).json(errors);
+    return res.status(422).json({ errors });
   }
   try {
     const table = await TablesDAO.insert(req.body);
@@ -26,18 +27,18 @@ exports.createTable = async (req, res, next) => {
 function findFreeTable(reserv, startTime, endTime) {
   let i = 0;
   while (i < reserv.length) {
-    const start = `${reserv[i].startTime.hour}${reserv[i].startTime.minute}`;
-    const end = `${reserv[i].endTime.hour}${reserv[i].endTime.minute}`;
-    if ((startTime >= start && startTime < end)
-    || (endTime <= end && endTime > start)) {
+    if (moment(startTime).isSame(reserv[i].startTime)
+    || moment(endTime).isSame(reserv[i].endTime)) {
+      break;
+    }
+    const start = moment(startTime, 'YYYY-MM-DD HH:mm', true).isBetween(reserv[i].startTime, reserv[i].endTime, 'minute');
+    const end = moment(endTime, 'YYYY-MM-DD HH:mm').isBetween(reserv[i].startTime, reserv[i].endTime, 'minute');
+    if (start || end) {
       break;
     }
     i += 1;
   }
-  if (i === reserv.length) {
-    return true;
-  }
-  return false;
+  return i === reserv.length;
 }
 
 function addReservationId(_id, reservationId) {
@@ -55,16 +56,15 @@ exports.Reservation = async (req, res, next) => {
   }
   const errors = validate(req.body, timeConstrains);
   if (errors) {
-    return res.status(422).json(errors);
+    return res.status(422).json({ errors });
   }
-  const startTime = `${req.body.startTime.hour}${req.body.startTime.minute}`;
-  const endTime = `${req.body.endTime.hour}${req.body.endTime.minute}`;
   try {
     const tables = await TablesDAO.fetchMany({ restaurantId: req.body.restaurantId });
     if (!tables.length) {
       return res.status(401).json({ message: 'there are no tables in the restaurant' });
     }
-    const freeTable = tables.filter(table => findFreeTable(table.reservations, startTime, endTime));
+    const freeTable = tables
+      .filter(table => findFreeTable(table.reservations, req.body.startTime, req.body.endTime));
     if (!freeTable.length) {
       if (req.query.check) {
         return res.json({
@@ -76,7 +76,7 @@ exports.Reservation = async (req, res, next) => {
           ],
         });
       }
-      return res.status(401).json({ message: 'no free table' });
+      return res.status(401).json({ message: 'at this time all the tables are reserved' });
     }
     if (req.query.check) {
       return res.json({ data: [] });
@@ -85,6 +85,7 @@ exports.Reservation = async (req, res, next) => {
     req.body.tableId = tableId;
     const bookedTable = await reservation.booking(req.body);
     await addReservationId(tableId, bookedTable._id);
+    ['__v', '_id'].forEach(e => delete bookedTable[e]);
     return res.json(bookedTable);
   } catch (e) {
     console.log(e);

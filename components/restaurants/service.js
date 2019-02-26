@@ -9,7 +9,7 @@ exports.createRestaurants = (req, res) => {
   }
   const errors = validate(req.body, options);
   if (errors) {
-    return res.status(422).json(errors);
+    return res.status(422).json({ errors });
   }
   req.body.address = {
     country: req.body.country,
@@ -67,7 +67,7 @@ exports.addProducts = (req, res) => {
   }
   const errors = validate(req.body, { productId: { presence: true } });
   if (errors) {
-    return res.status(422).json(errors);
+    return res.status(422).json({ errors });
   }
   const { productId } = req.body;
   const update = {};
