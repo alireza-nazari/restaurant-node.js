@@ -98,3 +98,12 @@ exports.deleteProduct = async (req, res) => {
     })
     .catch(err => res.json(err));
 };
+
+exports.removeAll = async (req, res, next) => {
+  try {
+    const data = await RestaurantsDAO.removeAll();
+    res.json(data);
+  } catch (e) {
+    next(e);
+  }
+};

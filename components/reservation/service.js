@@ -38,3 +38,12 @@ exports.deleteReservations = async (req, res, next) => {
     return next(e);
   }
 };
+
+exports.removeAll = async (req, res, next) => {
+  try {
+    const data = await ReservationDAO.removeAll();
+    res.json(data);
+  } catch (e) {
+    next(e);
+  }
+};

@@ -112,3 +112,12 @@ exports.deleteTable = async (req, res, next) => {
     return next(e);
   }
 };
+
+exports.removeAll = async (req, res, next) => {
+  try {
+    const data = await TablesDAO.removeAll();
+    res.json(data);
+  } catch (e) {
+    next(e);
+  }
+};

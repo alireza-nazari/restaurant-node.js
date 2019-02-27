@@ -18,6 +18,7 @@ const upload = multer({ storage });
 const productRouter = express.Router();
 
 productRouter.get('/', products.getProducts);
+productRouter.delete('/', Auth.authorizeRequest('admin'), products.removeAll);
 productRouter.get('/:id', products.getOneProduct);
 productRouter.post('/', Auth.authorizeRequest('admin'), upload.single('image'), products.createProduct);
 productRouter.put('/:id', Auth.authorizeRequest('admin'), upload.single('image'), products.updateProduct);

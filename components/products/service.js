@@ -95,3 +95,12 @@ exports.deleteProduct = (req, res) => {
     .then(data => res.json(data))
     .catch(err => res.json(err));
 };
+
+exports.removeAll = async (req, res, next) => {
+  try {
+    const data = await ProductDAO.removeAll();
+    res.json(data);
+  } catch (e) {
+    next(e);
+  }
+};

@@ -20,12 +20,20 @@ class BaseDAO {
     return this.model.create(obj);
   }
 
+  insertMany(array) {
+    return this.model.insertMany(array);
+  }
+
   update(query, update) {
     return this.model.updateOne(query, update);
   }
 
   remove(query) {
     return this.model.deleteOne(query);
+  }
+
+  removeAll() {
+    return this.model.remove();
   }
 }
 

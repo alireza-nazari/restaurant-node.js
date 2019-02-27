@@ -18,6 +18,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 restaurantsRouter.post('/', upload.single('avatar'), Auth.authorizeRequest('admin'), restaurants.createRestaurants);
+restaurantsRouter.delete('/', Auth.authorizeRequest('admin'), restaurants.removeAll);
 restaurantsRouter.get('/', Auth.authorizeRequest('user'), restaurants.getRestaurants);
 restaurantsRouter.get('/:id', Auth.authorizeRequest('user'), restaurants.getRestaurantsById);
 // restaurantsRouter.put('/:id', Auth.authorizeRequest('admin'), restaurants.updateById);
