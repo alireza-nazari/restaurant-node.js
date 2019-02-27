@@ -1,0 +1,51 @@
+[
+    {
+        "categories": ["breakfast"],
+        "image": "prod_1.jpeg",
+        "name": "cappuccion",
+        "description": "Usage of the Internet is becoming more common due to rapid advance",
+        "price": "500"
+    },
+    {
+        "categories": ["dinner"],
+        "image": "prod_2.jpeg",
+        "name": "americano",
+        "description": "Usage of the Internet is becoming more common due to rapid advance",
+        "price": "390"
+    },
+    {
+        "categories": ["dinner"],
+        "image": "prod_3.jpeg",
+        "name": "evropano",
+        "description": "Usage of the Internet is becoming more common due to rapid advance",
+        "price": "450"
+    },
+    {
+        "categories": ["budget-meal"],
+        "image": "prod_4.jpeg",
+        "name": "macchiato",
+        "description": "Usage of the Internet is becoming more common due to rapid advance",
+        "price": "600"
+    },
+    {
+        "categories": ["breakfast"],
+        "image": "prod_5.jpeg",
+        "name": "mocha",
+        "description": "Usage of the Internet is becoming more common due to rapid advance",
+        "price": "820"
+    },
+    {
+        "categories": ["lunch"],
+        "image": "prod_6.jpeg",
+        "name": "piccolo latte",
+        "description": "Usage of the Internet is becoming more common due to rapid advance",
+        "price": "140"
+    },
+    {
+        "categories": ["buffet"],
+        "image": "prod_3.jpeg",
+        "name": "ristretto",
+        "description": "Usage of the Internet is becoming more common due to rapid advance",
+        "price": "250"
+    }
+]

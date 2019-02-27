@@ -1,0 +1,74 @@
+[
+    {
+        "reservations": [],
+        "number": 1,
+        "restaurantId": "",
+        "price": 1000
+    },
+    {
+        "reservations": [],
+        "number": 1,
+        "restaurantId": "",
+        "price": 500
+    },
+    {
+        "reservations": [],
+        "number": 1,
+        "restaurantId": "",
+        "price": 500
+    },
+    {
+        "reservations": [],
+        "number": 1,
+        "restaurantId": "",
+        "price": 1000
+    },
+    {
+        "reservations": [],
+        "number": 2,
+        "restaurantId": "",
+        "price": 500
+    },
+    {
+        "reservations": [],
+        "number": 2,
+        "restaurantId": "",
+        "price": 500
+    },
+    {
+        "reservations": [],
+        "number": 2,
+        "restaurantId": "",
+        "price": 1000
+    },
+    {
+        "reservations": [],
+        "number": 2,
+        "restaurantId": "",
+        "price": 500
+    },
+    {
+        "reservations": [],
+        "number": 3,
+        "restaurantId": "",
+        "price": 500
+    },
+    {
+        "reservations": [],
+        "number": 3,
+        "restaurantId": "",
+        "price": 1000
+    },
+    {
+        "reservations": [],
+        "number": 3,
+        "restaurantId": "",
+        "price": 500
+    },
+    {
+        "reservations": [],
+        "number": 3,
+        "restaurantId": "",
+        "price": 500
+    }
+]

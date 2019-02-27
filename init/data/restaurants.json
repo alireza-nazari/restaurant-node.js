@@ -1,0 +1,56 @@
+[
+    {
+        "address": {
+            "country": "Armenia",
+            "city": "Gyumri"
+        },
+        "avatar": "pizza-jazz.jpg",
+        "products": [],
+        "name": "pizza jazz",
+        "type": "restaurant",
+        "description": "pizzeria and restaurant",
+        "email": "jvardanyan@inbox.ru",
+        "tel": "(0312) 0312 5-70-77"
+    },
+    {
+        "address": {
+            "country": "Armenia",
+            "city": "Gyumri"
+        },
+        "avatar": "vanatur.jpg",
+        "products": [],
+        "name": "Vanatur",
+        "type": "restaurant",
+        "description": "Vanatur is one of the best restaurants in the city offering traditional Georgian cuisine.",
+        "email": "Vanatur@gmail.com",
+        "tel": "(+374) 0312 5-07-14"
+    },
+    {
+        "address": {
+            "country": "Armenia",
+            "city": "Gyumri"
+        },
+        "avatar": "shara.jpg",
+        "products": [],
+        "name": "Shara Restaurant",
+        "type": "restaurant",
+        "description": "Cooking is an art and patience is a virtue!",
+        "email": "Shara@gmail.com",
+        "tel": "(+374) 0312 3-55-63",
+        "tables": []
+    },
+    {
+        "address": {
+            "country": "Armenia",
+            "city": "Gyumri"
+        },
+        "avatar": "DarVino.png",
+        "products": [],
+        "name": "DarVino Wine House",
+        "type": "restaurant",
+        "description": "family atmosphere, good music and wide assortment of wines",
+        "email": "pizza.jazz@gmail.com",
+        "tel": "(+374) 93 79-77-78",
+        "tables": []
+    }
+]
