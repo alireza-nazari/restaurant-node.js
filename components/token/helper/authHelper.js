@@ -10,7 +10,6 @@ module.exports.generateAccessToken = (userId) => {
     type: tokens.access.type,
   };
   const options = { expiresIn: tokens.access.expiresIn };
-
   return jwt.sign(payload, secret, options);
 };
 
@@ -20,13 +19,17 @@ module.exports.generateRefreshToken = () => {
     type: tokens.refresh.type,
   };
   const options = { expiresIn: tokens.refresh.expiresIn };
-
   return {
     id: payload.id,
     token: jwt.sign(payload, secret, options),
   };
 };
 
-module.exports.replaceDbRefreshToken = (tokenId, userId) => TokenDAO.removeToken({ userId })
-  .exec()
-  .then(() => TokenDAO.insert({ tokenId, userId }));
+module.exports.replaceDbRefreshToken = async (tokenId, userId) => {
+  try {
+    await TokenDAO.removeToken({ userId });
+    return await TokenDAO.insert({ tokenId, userId });
+  } catch (e) {
+    return e;
+  }
+};

@@ -1,11 +1,14 @@
 const authHelper = require('./helper/authHelper');
 
-exports.updateToken = (userId) => {
+
+// TODO sarkel asinxron tech kanflict kuda
+exports.updateToken = async (userId) => {
   const accessToken = authHelper.generateAccessToken(userId);
   const refreshToken = authHelper.generateRefreshToken();
-  return authHelper.replaceDbRefreshToken(refreshToken.id, userId)
-    .then(() => ({
-      accessToken,
-      refreshToken: refreshToken.token,
-    }));
+  try {
+    await authHelper.replaceDbRefreshToken(refreshToken.id, userId);
+    return { accessToken, refreshToken: refreshToken.token };
+  } catch (e) {
+    return e;
+  }
 };

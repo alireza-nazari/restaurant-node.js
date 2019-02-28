@@ -3,14 +3,17 @@ const validate = require('validate.js');
 const { OrderConstrains: options, orderProducts } = require('./private/validateOptions');
 const OrderDAO = require('./private/dao');
 
-exports.getOrders = (req, res) => {
+exports.getOrders = async (req, res, next) => {
   const { limit, offset } = req;
-  OrderDAO.fetchMany({}, { limit, offset })
-    .then(orders => res.json(orders))
-    .catch(err => res.json(err));
+  try {
+    const orders = await OrderDAO.fetchMany({}, { limit, offset });
+    res.json(orders);
+  } catch (e) {
+    next(e);
+  }
 };
 
-exports.createOrder = (req, res) => {
+exports.createOrder = async (req, res, next) => {
   if (JSON.stringify(req.body) === '{}') {
     return res.status(400).json({ message: 'Body required' });
   }
@@ -50,12 +53,15 @@ exports.createOrder = (req, res) => {
   } = req.body;
   req.body.payment = { method };
   req.body.shipping = { address };
-  return OrderDAO.insert(req.body)
-    .then(order => res.json(order))
-    .catch(err => res.json(err));
+  try {
+    const order = await OrderDAO.insert(req.body);
+    return res.json(order);
+  } catch (e) {
+    return next(e);
+  }
 };
 
-exports.addProduct = (req, res) => {
+exports.addProduct = async (req, res, next) => {
   if (JSON.stringify(req.body) === '{}') {
     return res.status(400).json({ message: ['Body required'] });
   }
@@ -94,24 +100,29 @@ exports.addProduct = (req, res) => {
       },
     },
   };
-  console.log(update);
-  return OrderDAO.update({ _id: req.params.id }, update)
-    .then(data => res.json(data))
-    .catch(err => res.json(err));
+  try {
+    const updatedData = await OrderDAO.update({ _id: req.params.id }, update);
+    return res.json(updatedData);
+  } catch (e) {
+    return next(e);
+  }
 };
 
 exports.getOneOrder = (req, res) => {
   res.json(req.order);
 };
 
-exports.getOrdersByUserId = (req, res) => {
+exports.getOrdersByUserId = async (req, res, next) => {
   const { limit, offset } = req;
-  OrderDAO.fetchMany({ userId: req.user._id }, { limit, offset })
-    .then(orders => res.json(orders))
-    .catch(err => res.json(err));
+  try {
+    const orders = await OrderDAO.fetchMany({ userId: req.user._id }, { limit, offset });
+    res.json(orders);
+  } catch (e) {
+    next(e);
+  }
 };
 
-exports.updateOrder = (req, res) => {
+exports.updateOrder = async (req, res, next) => {
   if (JSON.stringify(req.body) === '{}') {
     return res.status(400).json({ message: 'Body required' });
   }
@@ -148,25 +159,32 @@ exports.updateOrder = (req, res) => {
   if (JSON.stringify(req.body) !== '{}') {
     update.$set = req.body;
   }
-  return OrderDAO.update({ _id: req.params.id }, update)
-    .then(data => res.json(data))
-    .catch(err => res.json(err));
+  try {
+    const updatedData = await OrderDAO.update({ _id: req.params.id }, update);
+    return res.json(updatedData);
+  } catch (e) {
+    return next(e);
+  }
 };
 
-exports.deleteOrder = (req, res) => {
-  OrderDAO.remove({ _id: req.params.id })
-    .then(data => res.json(data))
-    .catch(err => res.json(err));
+exports.deleteOrder = async (req, res, next) => {
+  try {
+    const deletedData = await OrderDAO.remove({ _id: req.params.id });
+    res.json(deletedData);
+  } catch (e) {
+    next(e);
+  }
 };
 
-exports.deleteProducts = (req, res) => {
+exports.deleteProducts = async (req, res, next) => {
   const query = { _id: req.params.id };
   const update = {
     $pull: { products: req.params.prod_id },
   };
-  OrderDAO.update(query, update)
-    .then((order) => {
-      res.json(order);
-    })
-    .catch(err => res.json(err));
+  try {
+    const order = await OrderDAO.update(query, update);
+    res.json(order);
+  } catch (e) {
+    next(e);
+  }
 };

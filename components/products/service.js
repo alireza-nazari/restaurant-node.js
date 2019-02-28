@@ -3,25 +3,29 @@ const validate = require('validate.js');
 const options = require('./private/validateOptions');
 const ProductDAO = require('./private/dao');
 
-exports.getProducts = (req, res) => {
+exports.getProducts = async (req, res, next) => {
   const { limit, offset } = req;
-  ProductDAO.fetchMany({}, { limit, offset })
-    .then(products => res.json(products))
-    .catch(err => res.json(err));
+  try {
+    const products = await ProductDAO.fetchMany({}, { limit, offset });
+    res.json(products);
+  } catch (e) {
+    next(e);
+  }
 };
 
-exports.getOneProduct = (req, res) => {
-  ProductDAO.fetchOne({ _id: req.params.id })
-    .then((product) => {
-      if (!product) {
-        res.status(400).json({ message: 'no such product' });
-      }
-      res.json(product);
-    })
-    .catch(err => res.json(err));
+exports.getOneProduct = async (req, res, next) => {
+  try {
+    const product = await ProductDAO.fetchOne({ _id: req.params.id });
+    if (!product) {
+      return res.status(400).json({ message: 'no such product' });
+    }
+    return res.json(product);
+  } catch (e) {
+    return next(e);
+  }
 };
 
-exports.createProduct = (req, res) => {
+exports.createProduct = async (req, res, next) => {
   if (JSON.stringify(req.body) === '{}' && !req.file) {
     return res.status(400).json({ message: 'Body required' });
   }
@@ -33,12 +37,15 @@ exports.createProduct = (req, res) => {
     req.body.image = req.file.filename;
   }
   req.body.categories = req.body.category;
-  return ProductDAO.insert(req.body)
-    .then(product => res.json(product))
-    .catch(err => res.json(err));
+  try {
+    const product = await ProductDAO.insert(req.body);
+    return res.json(product);
+  } catch (e) {
+    return next(e);
+  }
 };
 
-exports.updateProduct = (req, res) => {
+exports.updateProduct = async (req, res, next) => {
   if (JSON.stringify(req.body) === '{}' && !req.files) {
     return res.status(400).json({ message: 'Body required' });
   }
@@ -54,7 +61,7 @@ exports.updateProduct = (req, res) => {
       }
     });
     if (JSON.stringify(errors) !== '{}') {
-      return res.status(400).json(errors);
+      return res.status(400).json({ errors });
     }
     errors = validate(req.body, option);
     if (errors) {
@@ -85,15 +92,21 @@ exports.updateProduct = (req, res) => {
   }
   update.$set = req.body;
   const query = { _id: req.params.id };
-  return ProductDAO.update(query, update)
-    .then(data => res.json(data))
-    .catch(err => res.json(err));
+  try {
+    const updatedData = await ProductDAO.update(query, update);
+    return res.json(updatedData);
+  } catch (e) {
+    return next(e);
+  }
 };
 
-exports.deleteProduct = (req, res) => {
-  ProductDAO.remove({ _id: req.params.id })
-    .then(data => res.json(data))
-    .catch(err => res.json(err));
+exports.deleteProduct = async (req, res, next) => {
+  try {
+    const deletedData = await ProductDAO.remove({ _id: req.params.id });
+    res.json(deletedData);
+  } catch (e) {
+    next(e);
+  }
 };
 
 exports.removeAll = async (req, res, next) => {

@@ -3,7 +3,7 @@ const validate = require('validate.js');
 const RestaurantsDAO = require('./private/dao');
 const options = require('./private/validateOptions');
 
-exports.createRestaurants = (req, res) => {
+exports.createRestaurants = async (req, res, next) => {
   if (JSON.stringify(req.body) === '{}') {
     return res.status(400).json({ message: 'Body required' });
   }
@@ -18,50 +18,57 @@ exports.createRestaurants = (req, res) => {
   if (req.file) {
     req.body.avatar = req.file.filename;
   }
-  return RestaurantsDAO.insert(req.body)
-    .then(restauran => res.json(restauran))
-    .catch(err => res.json(err));
+  try {
+    const restauran = await RestaurantsDAO.insert(req.body);
+    return res.json(restauran);
+  } catch (e) {
+    return next(e);
+  }
 };
 
-exports.getRestaurants = (req, res) => {
+exports.getRestaurants = async (req, res, next) => {
   const { limit, offset } = req;
-  RestaurantsDAO.fetchMany({}, { limit, offset })
-    .then(restaurants => restaurants.map((restaurant) => {
+  try {
+    const restaurants = RestaurantsDAO.fetchMany({}, { limit, offset });
+    restaurants.map((restaurant) => {
       restaurant.avatar = `images/restaurants/${restaurant.avatar}`;
       return restaurant;
-    }))
-    .then(data => res.json(data))
-    .catch(err => res.json(err));
+    });
+    return res.json(restaurants);
+  } catch (e) {
+    return next(e);
+  }
 };
 
-exports.getRestaurantsById = (req, res) => {
-  RestaurantsDAO.getRestaurant({ _id: req.params.id })
-    .then((restaurant) => {
-      restaurant.products.map((product) => {
-        product.image = `images/products/${product.image}`;
-        return product;
-      });
-      restaurant.avatar = `images/restaurants/${restaurant.avatar}`;
-      return restaurant;
-    })
-    .then((data) => {
-      if (!data) {
-        return res.status(400).json({ message: 'no such restauran' });
-      }
-      return res.json(data);
-    })
-    .catch(err => res.json(err));
+exports.getRestaurantsById = async (req, res, next) => {
+  try {
+    const restaurant = await RestaurantsDAO.getRestaurant({ _id: req.params.id });
+    if (!restaurant) {
+      return res.status(400).json({ message: 'no such restauran' });
+    }
+    restaurant.products.map((product) => {
+      product.image = `images/products/${product.image}`;
+      return product;
+    });
+    restaurant.avatar = `images/restaurants/${restaurant.avatar}`;
+    return res.json(restaurant);
+  } catch (e) {
+    return next(e);
+  }
 };
 
 // exports.updeteById = (req, res) => {};
 
-exports.deleteRestaurnt = (req, res) => {
-  RestaurantsDAO.remove({ _id: req.params.id })
-    .then(data => res.json(data))
-    .catch(err => res.json(err));
+exports.deleteRestaurnt = async (req, res, next) => {
+  try {
+    const deletedData = await RestaurantsDAO.remove({ _id: req.params.id });
+    res.json(deletedData);
+  } catch (e) {
+    next(e);
+  }
 };
 
-exports.addProducts = (req, res) => {
+exports.addProducts = async (req, res, next) => {
   if (JSON.stringify(req.body) === '{}') {
     return res.status(400).json({ message: 'Body required' });
   }
@@ -82,21 +89,25 @@ exports.addProducts = (req, res) => {
       products: productId,
     };
   }
-  return RestaurantsDAO.update({ _id: req.params.id }, update)
-    .then(data => res.json(data))
-    .catch(err => res.json(err));
+  try {
+    const updatedData = await RestaurantsDAO.update({ _id: req.params.id }, update);
+    return res.json(updatedData);
+  } catch (e) {
+    return next(e);
+  }
 };
 
-exports.deleteProduct = async (req, res) => {
+exports.deleteProduct = async (req, res, next) => {
   const query = { _id: req.params.id };
   const update = {
     $pull: { products: req.params.prod_id },
   };
-  RestaurantsDAO.update(query, update)
-    .then((order) => {
-      res.json(order);
-    })
-    .catch(err => res.json(err));
+  try {
+    const order = await RestaurantsDAO.update(query, update);
+    res.json(order);
+  } catch (e) {
+    next(e);
+  }
 };
 
 exports.removeAll = async (req, res, next) => {

@@ -1,114 +1,98 @@
 const validate = require('validate.js');
 
-const options = require('./private/validateOptions');
 const UserDAO = require('./private/dao');
-const { updateToken } = require('../token/authToken');
 const TokenDAO = require('../token/private/dao');
+const options = require('./private/validateOptions');
+const { updateToken } = require('../token/authToken');
 
-exports.createUsers = (req, res) => {
+exports.createUsers = async (req, res, next) => {
   if (JSON.stringify(req.body) === '{}') {
     return res.status(400).json({ message: 'Body required' });
   }
   const errors = validate(req.body, options);
   if (errors) {
-    return res.status(422).json(errors);
+    return res.status(422).json({ errors });
   }
-  const { email } = req.body;
-  return UserDAO.fetchOne({ email })
-    .then((user) => {
-      if (user) {
-        return res.status(401).json({ email: 'user is registered, please enter other email' });
-      }
-      req.body.address = {
-        country: req.body.country,
-        city: req.body.city,
-      };
-      if (req.file) {
-        req.body.image = req.file.filename;
-      }
-      return UserDAO.insert(req.body)
-        .then(fullUser => ({
-          _id: fullUser._id,
-          name: fullUser.name,
-          surname: fullUser.surname,
-          age: fullUser.age,
-          email: fullUser.email,
-          address: fullUser.address,
-          image: fullUser.image,
-        }))
-        .then(cratedUser => updateToken(cratedUser._id)
-          .then(tokens => ({ user: cratedUser, tokens }))
-          .then(data => res.json(data)))
-        .catch(err => res.json(err));
-    })
-    .catch(err => res.status(444).json(err));
+  try {
+    const user = await UserDAO.fetchOne({ email: req.body.email });
+    if (user) {
+      return res.status(401).json({ email: 'user is registered, please enter other email' });
+    }
+    req.body.address = {
+      country: req.body.country,
+      city: req.body.city,
+    };
+    if (req.file) {
+      req.body.image = req.file.filename;
+    }
+    const insertedUser = await UserDAO.insert(req.body);
+    const { _id, name, surname, age, email, address, image } = insertedUser;
+    const cratedUser = { _id, name, surname, age, email, address, image };
+    const tokens = await updateToken(_id);
+    return res.json({ user: cratedUser, tokens });
+  } catch (e) {
+    return next(e);
+  }
 };
 
-exports.getUsers = (req, res) => {
+exports.getUsers = async (req, res, next) => {
   const { limit, offset } = req;
-  UserDAO.fetchMany({}, { limit, offset })
-    .then(users => users.map((user) => {
+  try {
+    const users = await UserDAO.fetchMany({}, { limit, offset });
+    const newUsers = users.map((user) => {
       user.image = `images/users/${user.image}`;
       return user;
-    }))
-    .then((users) => {
-      res.json(users);
-    })
-    .catch((err) => {
-      res.json(err);
     });
+    res.json(newUsers);
+  } catch (e) {
+    next(e);
+  }
 };
 
-exports.getOneUser = (req, res) => {
+exports.getOneUser = async (req, res, next) => {
   if (req.user) {
     req.user.image = `images/users/${req.user.image}`;
     return res.json(req.user);
   }
-  return UserDAO.getOne({ _id: req.params.id })
-    .then((user) => {
-      if (!user) {
-        return res.status(400).json({ message: 'no such user' });
-      }
-      user.image = `images/users/${user.image}`;
-      return res.json(user);
-    })
-    .catch(err => res.json(err));
+  try {
+    const user = await UserDAO.fetchOne({ _id: req.params.id });
+    if (!user) {
+      return res.status(400).json({ message: 'no such user' });
+    }
+    user.image = `images/users/${user.image}`;
+    return res.json(user);
+  } catch (e) {
+    return next(e);
+  }
 };
 
-exports.login = (req, res) => {
+exports.login = async (req, res, next) => {
   if (JSON.stringify(req.body) === '{}') {
     return res.status(400).json({ message: 'Body required' });
   }
-  const { email, password } = req.body;
   const { email: option } = options;
-  const errors = validate({ email }, { email: option });
+  const errors = validate({ email: req.body.email }, { email: option });
   if (errors) {
     return res.status(422).json({ errors });
   }
-  return UserDAO.fetchOne({ email })
-    .then((user) => {
-      if (!user) {
-        return res.status(401).json({ email: 'such user not found' });
-      }
-      if (!user.checkPassword(password)) {
-        return res.status(422).json({ password: 'wrong password' });
-      }
-      return {
-        _id: user._id,
-        name: user.name,
-        surname: user.surname,
-        age: user.age,
-        email: user.email,
-        address: user.address,
-        image: user.image,
-      };
-    })
-    .then(user => updateToken(user._id)
-      .then(tokens => res.json({ tokens, user })))
-    .catch(err => res.json(err));
+  try {
+    const user = await UserDAO.fetchOne({ email: req.body.email });
+    if (!user) {
+      return res.status(401).json({ email: 'such user not found' });
+    }
+    if (!user.checkPassword(req.body.password)) {
+      return res.status(422).json({ password: 'wrong password' });
+    }
+    const { _id, name, surname, age, email, address, image } = user;
+    const tokens = await updateToken(_id);
+    const newUser = { _id, name, surname, age, email, address, image };
+    return res.json({ tokens, user: newUser });
+  } catch (e) {
+    return next(e);
+  }
 };
 
-exports.updateUsers = (req, res) => {
+exports.updateUsers = async (req, res, next) => {
   if (JSON.stringify(req.body) === '{}') {
     return res.status(400).json({ message: 'Body required' });
   }
@@ -140,18 +124,20 @@ exports.updateUsers = (req, res) => {
   const update = {
     $set: req.body,
   };
-  return UserDAO.update({ _id: req.params.id }, update)
-    .then(data => res.json(data))
-    .catch(err => res.json(err));
+  try {
+    const updateData = UserDAO.update({ _id: req.params.id }, update);
+    return res.json(updateData);
+  } catch (e) {
+    return next(e);
+  }
 };
 
-exports.removeUsers = (req, res) => {
-  UserDAO.remove({ _id: req.params.id })
-    .then((data) => {
-      TokenDAO.removeToken({ userId: req.params.id })
-        .then(token => console.log(token))
-        .catch(err => console.log(err));
-      return res.json(data);
-    })
-    .catch(err => res.json(err));
+exports.removeUsers = async (req, res, next) => {
+  try {
+    const deletedData = await UserDAO.remove({ _id: req.params.id });
+    await TokenDAO.removeToken({ userId: req.params.id });
+    return res.json(deletedData);
+  } catch (e) {
+    return next(e);
+  }
 };

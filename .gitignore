@@ -17,6 +17,7 @@ package-lock.json
 *.launch
 .settings/
 *.sublime-workspace
+.tern-project
 package-lock.json
 
 # IDE - VSCode
